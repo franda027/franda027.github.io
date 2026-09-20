@@ -253,7 +253,7 @@
       color: var(--text-light);
       font-size: 0.93rem;
     }
-    /* ---------- 生活卡片图片空位 ---------- */
+    /* ---------- 生活卡片图片墙 ---------- */
     .card-gallery {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -267,12 +267,42 @@
       background: #f8fafc;
       border: 1.5px dashed #cbd5e1;
     }
+    /* 所有小图强制统一为正方形格子，自动裁剪填充 */
     .card-gallery img {
       width: 100%;
-      aspect-ratio: 1;
+      height: auto;
+      aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 8px;
       display: block;
+      cursor: zoom-in;
+      transition: opacity 0.2s;
+    }
+    .card-gallery img:hover {
+      opacity: 0.85;
+    }
+    /* ---------- 图片放大查看层 ---------- */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.88);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      padding: 24px;
+    }
+    .lightbox.open {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 92vw;
+      max-height: 92vh;
+      width: auto;
+      height: auto;
+      border-radius: var(--radius);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
     }
     /* ---------- 简历下载链接 ---------- */
     .resume-link {
@@ -423,9 +453,8 @@
         <h2 class="section-title">生活方式</h2>
         <p class="section-desc">工作之外，我热爱的一切。</p>
         <div class="cards">
-          <!-- 每个板块预留 3 个图片空位：
-               把 <div class="img-slot"></div> 替换为
-               <img src="你的图片.jpg" alt="描述"> 即可 -->
+          <!-- 图片由 .card-gallery img 样式统一为等大正方形，
+               点击任意图片可放大查看 -->
           <div class="card">
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -433,9 +462,9 @@
             <h3>旅途中</h3>
             <p>记录旅途中的风景与故事。</p>
             <div class="card-gallery">
-              <img src="1.jpg">
-              <img src="2(1).jpg">
-              <img src="3.jpg">
+              <img src="1.jpg" alt="旅途中 1">
+              <img src="2(1).jpg" alt="旅途中 2">
+              <img src="3.jpg" alt="旅途中 3">
             </div>
           </div>
           <div class="card">
@@ -445,9 +474,9 @@
             <h3>乐队</h3>
             <p>我与音乐、现场演出的故事。</p>
             <div class="card-gallery">
-              <img src="4.jpg">
-              <img src="5.jpg">
-             <img src="6.jpg">
+              <img src="4.jpg" alt="乐队 1">
+              <img src="5.jpg" alt="乐队 2">
+              <img src="6.jpg" alt="乐队 3">
             </div>
           </div>
           <div class="card">
@@ -457,9 +486,9 @@
             <h3>电竞现场</h3>
             <p>热血沸腾的现场观赛时刻。</p>
             <div class="card-gallery">
-              <img src="9.jpg">
-              <img src="8.jpg">
-              <img src="12.jpg">
+              <img src="9.jpg" alt="电竞现场 1">
+              <img src="8.jpg" alt="电竞现场 2">
+              <img src="12.jpg" alt="电竞现场 3">
             </div>
           </div>
           <div class="card">
@@ -469,9 +498,9 @@
             <h3>剧院</h3>
             <p>戏剧、歌剧与舞台的魅力。</p>
             <div class="card-gallery">
-              <img src="13.jpg">
-              <img src="14.jpg">
-              <img src="15.jpg">
+              <img src="13.jpg" alt="剧院 1">
+              <img src="14.jpg" alt="剧院 2">
+              <img src="15.jpg" alt="剧院 3">
             </div>
           </div>
         </div>
@@ -496,5 +525,33 @@
       <p>© 2026 吴雨桐 · 由 GitHub Pages 托管</p>
     </div>
   </footer>
+  <!-- ========== 图片放大查看层 ========== -->
+  <div id="lightbox" class="lightbox">
+    <img src="" alt="放大查看">
+  </div>
+  <script>
+    (function () {
+      var lightbox = document.getElementById('lightbox');
+      var lightboxImg = lightbox.querySelector('img');
+      // 点击小图：在放大层中打开
+      document.querySelectorAll('.card-gallery img').forEach(function (img) {
+        img.addEventListener('click', function () {
+          lightboxImg.src = this.src;
+          lightbox.classList.add('open');
+        });
+      });
+      // 点击黑色背景或按 Esc 关闭
+      lightbox.addEventListener('click', function () {
+        lightbox.classList.remove('open');
+        lightboxImg.src = '';
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && lightbox.classList.contains('open')) {
+          lightbox.classList.remove('open');
+          lightboxImg.src = '';
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
